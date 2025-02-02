@@ -1,0 +1,30 @@
+{
+  "name": "easypantry",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "fblogin": "firebase login"
+  },
+  "dependencies": {
+    "@vueup/vue-quill": "^1.2.0",
+    "animate.css": "^4.1.1",
+    "bootstrap": "^5.3.3",
+    "firebase": "^11.0.2",
+    "firebase-tools": "^13.28.0",
+    "pinia": "^2.3.0",
+    "qrcode": "^1.5.4",
+    "router": "^2.0.0",
+    "sass": "^1.80.6",
+    "vue": "^3.5.12",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "html5-qrcode": "^2.3.8",
+    "vite": "^5.4.10"
+  }
+}

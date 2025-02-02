@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /js2/easypantry/dist/
+  
+  # Skip processing if accessing index.html explicitly
+  RewriteRule ^index\.html$ - [L]
+  
+  # Check if the requested file or directory exists
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Redirect all other requests to index.html within /js2/easypantry/dist/
+  RewriteRule ^ /js2/easypantry/dist/index.html [L]
+</IfModule>
