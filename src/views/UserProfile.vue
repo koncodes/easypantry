@@ -8,6 +8,8 @@ import FriendshipListItem from "@/components/FriendshipListItem.vue";
 
 import QRCode from 'qrcode';
 import Friends from '@/components/Friends.vue';
+import RecipeCollection from '@/firebase/RecipeCollection';
+import Recipe from '@/models/Recipe';
 
 
 export default {
@@ -32,6 +34,7 @@ export default {
       approvedFriends: [],
       loaded: false,
       qrCodeUrl: '', // to hold the QR code image URL
+      recipeArray: [],
     }
   },
   methods: {
@@ -68,7 +71,23 @@ export default {
         console.error("Error fetching friends:", error);
         this.friendships = []; 
       }
-    }
+    },
+    loadRecipes() {
+        const recipesCollection = RecipeCollection.getRecipesCollection();
+
+        let queryRef = recipesCollection;
+
+        if (this.searchQuery) {
+            queryRef = query(queryRef, where("byUser", "==", this.userId));
+        }
+        onSnapshot(queryRef, (querySnapshot) => {
+            this.recipeArray = [];
+            this.recipeArray = querySnapshot.docs.map((doc) => 
+                Recipe.fromFirestore(doc, {}) // Leverage the static fromFirestore method
+            );
+            this.loaded = true;
+        })
+    },
   },
   computed: {
     mutualFriendship() {
@@ -97,8 +116,9 @@ export default {
 
     }
   },
-    mounted() {
+  mounted() {
     this.fetchUsers();
+    this.loadRecipes();
     console.log('userId on init', this.userId);
   },
   watch: {
@@ -145,8 +165,8 @@ export default {
             </p>
           </div>
         </div>
-      </div>
-      <div class="user-profile-body flex-grow-1">
+    </div>
+    <div class="user-profile-body flex-grow-1">
         <!-- <ul v-if="loaded && user?.exists()">
           <friendship-list-item 
             v-for="(friendship, i) in friendships" 
@@ -158,8 +178,11 @@ export default {
             class="list-group-item"
             />
         </ul> -->
-        <div v-if="qrCodeUrl">
+      <div v-if="qrCodeUrl">
         <img :src="qrCodeUrl" alt="QR Code for Profile" />
+      </div>
+      <div v-for="(item, i) in recipeArray">
+        {{item.name}}
       </div>
     </div>
   </div>
