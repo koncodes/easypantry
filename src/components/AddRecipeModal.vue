@@ -90,6 +90,8 @@ export default {
         if(this.recipe) {
             console.log('editing recipe', this.recipe)
 
+            // deep copy? better way to do this?
+
             function deepCopyRecipe(recipe) {
               return new Recipe(
                 recipe.id,
@@ -97,12 +99,12 @@ export default {
                 recipe.imageURL,
                 recipe.description,
                 recipe.category,
-                [...recipe.diet], // Deep copy array
+                [...recipe.diet], 
                 recipe.prepTime,
                 recipe.cookTime,
                 recipe.totalTime,
-                [...recipe.ingredients], // Deep copy array
-                [...recipe.directions], // Deep copy array
+                [...recipe.ingredients], 
+                [...recipe.directions], 
                 recipe.byUser,
                 recipe.savedBy
               );
