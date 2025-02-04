@@ -10,19 +10,27 @@ import QRCode from 'qrcode';
 import Friends from '@/components/Friends.vue';
 import RecipeCollection from '@/firebase/RecipeCollection';
 import Recipe from '@/models/Recipe';
+import RecipeListItem from '@/components/RecipeListItem.vue';
+
 
 
 export default {
   name: "UserProfile",
-  components: {FriendshipListItem},
+  components: {FriendshipListItem, RecipeListItem},
   props: {
     userId: {
       type: String, 
       required: true
     },
+    isInList: {
+            type: Function
+    },
     authUser: {
-      type: User, 
-      required: true
+        type: User, 
+        required: true
+    },
+    toTitleCase: {
+        type: Function
     }
   },
   data() {
@@ -75,11 +83,9 @@ export default {
     loadRecipes() {
         const recipesCollection = RecipeCollection.getRecipesCollection();
 
-        let queryRef = recipesCollection;
+        const queryRef = query(recipesCollection, where("byUser", "==", this.userId));
 
-        if (this.searchQuery) {
-            queryRef = query(queryRef, where("byUser", "==", this.userId));
-        }
+        console.log('byUser is', this.userId);
         onSnapshot(queryRef, (querySnapshot) => {
             this.recipeArray = [];
             this.recipeArray = querySnapshot.docs.map((doc) => 
@@ -181,9 +187,16 @@ export default {
       <div v-if="qrCodeUrl">
         <img :src="qrCodeUrl" alt="QR Code for Profile" />
       </div>
-      <div v-for="(item, i) in recipeArray">
-        {{item.name}}
-      </div>
+      <recipe-list-item 
+                    :auth-user="authUser"
+                    :item="item" 
+                    v-for="(item, i) in recipeArray" 
+                    :key="item.id + i"
+                    :is-in-list="isInList"
+                    :to-title-case="toTitleCase"
+                    @toggle-favorite="id => $emit('toggle-favorite', id)"
+                    @add-it="ingredient => $emit('add-it', ingredient)"
+      ></recipe-list-item>
     </div>
   </div>
   <!-- <div card v-else>
