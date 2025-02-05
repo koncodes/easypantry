@@ -3,12 +3,18 @@ export default {
     name: "AppHeader",
     methods: {
         reloadPage() {
+            if (this.isReloading) return;
+            this.isReloading = true;
+
             if (this.$route.path === '/') {
                 window.location.reload();
             } else {
                 this.$router.push('/');
             }
-        }
+            setTimeout(() => {
+                this.isReloading = false;
+            }, 100); 
+        },
     }
 }
 </script>

@@ -7,6 +7,7 @@ import UserSettings from '@/views/UserSettings.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import UserList from '@/views/UserList.vue'
 import NotFound from '@/views/NotFound.vue'
+import { auth } from '@/firebase/index.js';
 
 const router = createRouter({
     history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -15,11 +16,13 @@ const router = createRouter({
             path: '/',
             name: 'home',
             component: HomeView,
+            meta: { requiresAuth: true }
         },
         {
             path: '/login',
             name: 'login',
             component: AuthView,
+            redirect: { name: 'loginDefault' },
             children: [
                 { 
                     path: '', 
@@ -50,11 +53,27 @@ const router = createRouter({
             component: UserList,
         },
         {
-          path: '/:pathMatch(.*)*',
-          name: 'NotFound',
-          component: NotFound,
+            path: '/:pathMatch(.*)*',
+            name: 'NotFound',
+            component: NotFound,
         },
     ],
 })
+
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (requiresAuth && !user) {
+            next({ name: 'login' });
+        } else if (to.name === 'login' && user) {
+            next({ name: 'home' });
+        } else {
+            next();
+        }
+        unsubscribe(); 
+    });
+});
+
+
 
 export default router
